@@ -1,17 +1,22 @@
 <?php
 
-    include 'upload.php';
+    require 'db.php';
+    require 'upload.php';
+    $name = '';
     
-    if(filter_input(INPUT_POST, 'name', FILTER_SANITIZE_FULL_SPECIAL_CHARS)&&filter_input(INPUT_POST,'email', FILTER_SANITIZE_FULL_SPECIAL_CHARS)&&filter_input(INPUT_POST,'gender', FILTER_SANITIZE_FULL_SPECIAL_CHARS)){
+    if(filter_input(INPUT_POST, 'name', FILTER_SANITIZE_FULL_SPECIAL_CHARS)&&filter_input(INPUT_POST,'email', FILTER_SANITIZE_EMAIL)&&filter_input(INPUT_POST,'gender', FILTER_SANITIZE_FULL_SPECIAL_CHARS)){
+        
         $name = $_POST["name"];
         $email = $_POST["email"];
         $gender = $_POST["gender"];
-        if (!file_exists('database/users.csv')) {
-            file_put_contents('database/users.csv', '');
+
+        $sql = "INSERT INTO users (email, name, gender, password, path_to_img) VALUES ('$email', '$name', '$gender', '111111', '$filePath')";
+        echo $sql;
+        $res = mysqli_query($conn, $sql);
+        if($res){
+            $valid = true;
         }
-        $fp = fopen('database/users.csv', 'a');
-        fwrite($fp, "$name,$email,$gender,$filePath\n");
-        fclose($fp);
+
     }
  
 ?>
@@ -32,10 +37,10 @@
 <body style="padding-top: 3rem;">
 <div class="container">
     <?php
-        if(filter_input(INPUT_POST, 'name', FILTER_SANITIZE_FULL_SPECIAL_CHARS)&&filter_input(INPUT_POST,'email', FILTER_SANITIZE_FULL_SPECIAL_CHARS)&&filter_input(INPUT_POST,'gender', FILTER_SANITIZE_FULL_SPECIAL_CHARS)){
-           echo $_POST["name"]."<br>";
-           echo $_POST["email"]."<br>"; 
-           echo $_POST["gender"]."<br>";
+        if($name!=''){
+           echo $name."<br>";
+           echo $email."<br>"; 
+           echo $gender."<br>";
            "<hr>";  
         }
         else{

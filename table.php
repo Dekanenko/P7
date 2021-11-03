@@ -1,25 +1,20 @@
 <?php
 
-    $str = null;
-    if (file_exists('database/users.csv')) {
-        $fp = fopen('database/users.csv', 'r');
-        $str = explode("\n",file_get_contents('database/users.csv'));
-        fclose($fp);
-        foreach($str as $s){
-            if($s!=null){
-                $user = explode(",",$s);
-
-                $users[] = [
-                    'name' => $user[0],
-                    'email' => $user[1],
-                    'gender' => $user[2],
-                    'userImg' => $user[3],
-                ];
-            }
+    require 'db.php';
+    $sql = "SELECT * FROM users";
+   // $result = mysqli_query($conn, $sql);
+    $result = $conn->query($sql);
+    if($result->num_rows > 0){
+        while($row = $result->fetch_assoc()){
+            $users[] = [
+                'name' => $row['name'],
+                'email' => $row['email'],
+                'gender' => $row['gender'],
+                'userImg' => $row['path_to_img'],
+            ];
         }
-
-        
     }
+
 ?>
 <!doctype html>
 <html lang="en">
@@ -38,24 +33,23 @@
 <body style="padding-top: 3rem;">
 <div class="container">       
     <table>
-        <?php if($str!=null):?>
-            <?php foreach($users as $oneuser ):?>
-                <?php
-                    if($oneuser["userImg"]!='') 
-                        $imWay =  $oneuser["userImg"];
-                    else
-                        $imWay = 'public\images\default.png';
-                    ?>
-                <tr>
-                    <td><?php echo $oneuser["name"] ?></td>
-                    <td><?php echo $oneuser["email"] ?></td>
-                    <td><?php echo $oneuser["gender"] ?></td>
-                    <td><?php echo "<img src=$imWay alt='userPhoto' width = 50px>" ?></td>
-                </tr>
-            <?php endforeach ?>
-        <?php endif ?>
+        <?php foreach($users as $oneuser ):?>
+            <?php
+                if($oneuser["userImg"]!='') 
+                    $imWay =  $oneuser["userImg"];
+                else
+                    $imWay = 'public\images\default.png';
+                ?>
+            <tr>
+                <td><?php echo $oneuser["name"] ?></td>
+                <td><?php echo $oneuser["email"] ?></td>
+                <td><?php echo $oneuser["gender"] ?></td>
+                <td><?php echo "<img src=$imWay alt='userPhoto' width = 50px>" ?></td>
+            </tr>
+        <?php endforeach ?>
     </table>
-   <a class="btn" href="adduser.php">return back</a>
+    <a class="btn" href="adduser.php">return back</a>
+    <a class="btn" href="login.php">Login</a>
 </div>
 </body>
 </html>
